@@ -1,6 +1,6 @@
 # wpbackup
 
-Script Python de **sauvegarde et restauration de sites WordPress**, pensé pour le **RGPD** : chiffrement des archives, rétention obligatoire, journal d'audit, secrets protégés.
+Script Python de **sauvegarde et restauration de sites WordPress** : chiffrement des archives, rétention obligatoire, journal d'audit, secrets protégés.
 
 Un seul fichier (`wpbackup.py`), des dépendances minimales, compatible **Debian, Ubuntu, RHEL** et fonctionnant en **conteneur LXC** (aucun montage système requis pour SMB et S3).
 
@@ -293,7 +293,7 @@ Utilisez le Python du venv pour que `cryptography`, `boto3` et `smbprotocol` soi
 
 Prévoyez dans le dossier de travail environ **deux fois la taille du site**. Les chemins se changent avec les variables `WPBACKUP_CONFIG_DIR`, `WPBACKUP_STATE_DIR`, `WPBACKUP_LOG_DIR` et `WPBACKUP_WORK_DIR`.
 
-## RGPD et sécurité
+## Sécurité
 
 Ce que le script met en œuvre :
 
@@ -332,7 +332,3 @@ Privilèges MariaDB minimaux pour l'utilisateur de sauvegarde : `SELECT`, `LOCK 
 - Bases MySQL / MariaDB uniquement
 - Le fichier de profil contient des identifiants : protégez `/etc/wpbackup` (utilisez `file:` ou `env:` pour les secrets)
 - Testé avec Python 3.12 ; compatible 3.8+ par conception
-
-## Licence
-
-À définir (par exemple MIT).
