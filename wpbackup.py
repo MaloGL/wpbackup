@@ -39,6 +39,7 @@ import argparse
 import copy
 import datetime as dt
 import email.utils
+import errno
 import fcntl
 import fnmatch
 import getpass
@@ -691,12 +692,21 @@ class SMBBackend(Backend):
         with self.smb.open_file(self._p(name), mode="rb") as fi, open(dst, "wb") as fo:
             shutil.copyfileobj(fi, fo, 1 << 20)
 
+    @staticmethod
+    def _is_not_found(e: Exception) -> bool:
+        """Dossier absent : ENOENT, STATUS_OBJECT_NAME_NOT_FOUND (0xc0000034),
+        STATUS_OBJECT_PATH_NOT_FOUND (0xc000003a) ou STATUS_NOT_FOUND."""
+        if isinstance(e, OSError) and e.errno == errno.ENOENT:
+            return True
+        msg = str(e).lower()
+        return any(k in msg for k in ("0xc0000034", "0xc000003a", "no such file", "not found"))
+
     def list(self) -> List[str]:
         try:
             return sorted(n for n in self.smb.listdir(self.base) if not n.endswith(".part"))
         except Exception as e:
-            if "NO_SUCH" in str(e).upper() or "not found" in str(e).lower():
-                return []
+            if self._is_not_found(e):
+                return []                    # premier lancement : le dossier sera créé à l'envoi
             raise
 
     def delete(self, name: str) -> None:
